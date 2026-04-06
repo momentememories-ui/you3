@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>เค้ามาง้ออ้วมค้าบ 💜</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-purple: #8e44ad;
+            --light-purple: #f3e5f5;
+            --bg-dark: #000000;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background: var(--bg-dark);
+            font-family: 'Mali', cursive;
+            width: 100vw; height: 100dvh;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        canvas { display: block; position: absolute; top: 0; left: 0; z-index: 1; }
+
+        /* --- หน้าจอเริ่ม --- */
+        #start-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            cursor: pointer;
+        }
+        .start-btn {
+            padding: 15px 40px; border-radius: 50px;
+            background: var(--primary-purple); color: #fff;
+            font-size: 1.3rem; border: none;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 20px rgba(142, 68, 173, 0.6);
+            font-family: 'Mali', cursive;
+        }
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
+
+        /* --- ข้อความบนพลุ --- */
+        #firework-text {
+            position: absolute; top: 35%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10; opacity: 0; transition: opacity 1s;
+            text-align: center; width: 100%;
+        }
+        .glowing-text {
+            font-size: 2.2rem; font-weight: 700;
+            color: #e0aaff; text-shadow: 0 0 20px #8e44ad;
+        }
+
+        /* --- หน้ากระดาษง้อ --- */
+        #reconcile-card {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 85%; max-width: 350px;
+            background: white; border-radius: 25px;
+            padding: 30px 20px; text-align: center;
+            z-index: 100; opacity: 0; pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 40px rgba(142, 68, 173, 0.4);
+            border: 4px solid var(--primary-purple);
+            color: #333;
+        }
+        #reconcile-card.show { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
+
+        .kuromi-question { width: 70px; margin-bottom: 10px; }
+        
+        .deco-img { width: 120px; margin: 10px 0; border-radius: 15px; border: 2px solid #eee; }
+        .ask-text { font-size: 1.4rem; font-weight: 700; color: var(--primary-purple); margin-bottom: 20px; }
+
+        .btn-group { display: flex; flex-direction: column; gap: 12px; }
+        .btn-choice {
+            padding: 14px; border-radius: 18px; border: none;
+            font-family: 'Mali', cursive; font-size: 1.2rem; cursor: pointer;
+            transition: transform 0.2s; font-weight: 600;
+        }
+        .btn-yes { background: #9b59b6; color: white; box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3); }
+        .btn-no { background: #f5f5f5; color: #aaa; }
+        .btn-choice:active { transform: scale(0.95); }
+
+        /* --- หน้าไม่หายงอน --- */
+        #angry-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--light-purple); z-index: 200;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            color: #333; padding: 20px; text-align: center;
+        }
+        .cat-img-main { width: 180px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .cat-img-wai { width: 140px; margin-top: 10px; }
+        .kuromi-angry { width: 60px; position: absolute; bottom: 30px; right: 30px; opacity: 0.7; }
+
+        /* --- หน้าสำเร็จ --- */
+        #success-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: 300;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--primary-purple); text-align: center; padding: 20px;
+        }
+        .hug-img { width: 220px; border-radius: 25px; margin: 20px 0; box-shadow: 0 10px 30px rgba(142, 68, 173, 0.2); }
+        .kuromi-love { width: 80px; margin-top: 15px; animation: bounce 1s infinite; }
+        @keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-10px);} }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop>
+        <source src="song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="start-screen" onclick="startShow()">
+        <div class="start-btn">แตะเพื่อเปิดของขวัญ 🎁</div>
+        <p style="color: #666; margin-top: 15px; font-size: 0.9rem;">(เปิดเสียงด้วยนะอ้วม 🎵)</p>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <div id="firework-text">
+        <h1 class="glowing-text">เค้ามาง้ออ้วมค้าบ 🥺</h1>
+    </div>
+
+    <div id="reconcile-card">
+        <img src="photo4.png" class="kuromi-question" alt="kuromi">
+        <div class="ask-text">ให้อภัยเค้าได้ไหม..<br>ดีกันน๊าาา</div>
+        <img src="photo5.png" class="deco-img" alt="รูปตกแต่ง">
+        <div class="btn-group">
+            <button class="btn-choice btn-yes" onclick="goSuccess()">หายงอน</button>
+            <button class="btn-choice btn-no" onclick="goAngry()">ไม่หายงอน</button>
+        </div>
+    </div>
+
+    <div id="angry-page">
+        <img src="photo1.png" class="cat-img-main" alt="แมวอ้อน">
+        <h2 style="color:var(--primary-purple); margin: 10px 0;">ดีกันเถอะน๊าาา 🥺</h2>
+        <p>เค้าจะไม่ทำอีกแล้ว เค้าขอโทษจริงๆ นะคะ...</p>
+        <img src="photo2.png" class="cat-img-wai" alt="แมวไหว้">
+        <img src="photo6.png" class="kuromi-angry">
+    </div>
+
+    <div id="success-page">
+        <h1 style="font-size: 2.3rem; margin-bottom: 0;">ขอบคุณค้าบ 💜</h1>
+        <p style="font-size: 1.3rem; font-weight: 600;">รักอ้วมที่สุดในโลกเลยยย</p>
+        <img src="photo3.png" class="hug-img" alt="แมวกอดกัน">
+        <img src="photo7.png" class="kuromi-love">
+        <div style="font-size: 1.5rem; margin-top: 10px;">💜💜💜</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        const audio = document.getElementById('bg-music');
+        let cw, ch;
+
+        function resize() { cw = window.innerWidth; ch = window.innerHeight; canvas.width = cw; canvas.height = ch; }
+        window.addEventListener('resize', resize); resize();
+
+        let particles = [];
+        class Particle {
+            constructor(x, y, hue) {
+                this.x = x; this.y = y;
+                this.angle = Math.random() * Math.PI * 2;
+                this.speed = Math.random() * 6 + 2;
+                this.friction = 0.96; this.gravity = 0.25;
+                this.hue = hue; this.alpha = 1; this.decay = 0.012;
+            }
+            update() {
+                this.speed *= this.friction;
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed + this.gravity;
+                this.alpha -= this.decay;
+            }
+            draw() {
+                ctx.fillStyle = `hsla(${this.hue}, 100%, 75%, ${this.alpha})`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, 1.5, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+
+        function createFirework() {
+            const tx = Math.random() * cw;
+            const ty = Math.random() * (ch/2);
+            const hue = 270 + Math.random() * 30; // เฉดม่วง
+            let count = 80;
+            while(count--) particles.push(new Particle(tx, ty, hue));
+        }
+
+        function loop() {
+            requestAnimationFrame(loop);
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+            ctx.fillRect(0, 0, cw, ch);
+            ctx.globalCompositeOperation = 'lighter';
+            particles.forEach((p, i) => {
+                p.update(); p.draw();
+                if(p.alpha <= 0) particles.splice(i, 1);
+            });
+            if(Math.random() < 0.05) createFirework();
+        }
+
+        function startShow() {
+            // เล่นเพลงทันทีที่กดปุ่ม
+            audio.play().catch(e => console.log("Audio play failed:", e));
+            
+            document.getElementById('start-screen').style.opacity = '0';
+            setTimeout(() => { document.getElementById('start-screen').style.display = 'none'; }, 500);
+            
+            loop();
+            setTimeout(() => {
+                document.getElementById('firework-text').style.opacity = 1;
+                setTimeout(() => {
+                    document.getElementById('firework-text').style.opacity = 0;
+                    document.getElementById('reconcile-card').classList.add('show');
+                }, 3500);
+            }, 800);
+        }
+
+        function goAngry() {
+            const angry = document.getElementById('angry-page');
+            angry.style.display = 'flex';
+            setTimeout(() => {
+                angry.style.opacity = 0;
+                setTimeout(() => { 
+                    angry.style.display = 'none'; 
+                    angry.style.opacity = 1;
+                }, 500);
+            }, 5000); // ให้เวลาอ่านและดูรูป 5 วินาที
+        }
+
+        function goSuccess() {
+            document.getElementById('success-page').style.display = 'flex';
+            document.getElementById('reconcile-card').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
