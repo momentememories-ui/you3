@@ -67,7 +67,7 @@
         }
         #reconcile-card.show { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
 
-        .kuromi-question { width: 70px; margin-bottom: 10px; }
+        .kuromi-question { width: 70px; margin-bottom: 10px; pointer-events: none; }
         
         .deco-img { width: 120px; margin: 10px 0; border-radius: 15px; border: 2px solid #eee; }
         .ask-text { font-size: 1.4rem; font-weight: 700; color: var(--primary-purple); margin-bottom: 20px; }
@@ -77,10 +77,16 @@
             padding: 14px; border-radius: 18px; border: none;
             font-family: 'Mali', cursive; font-size: 1.2rem; cursor: pointer;
             transition: transform 0.2s; font-weight: 600;
+            position: relative; padding-left: 45px;
         }
         .btn-yes { background: #9b59b6; color: white; box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3); }
         .btn-no { background: #f5f5f5; color: #aaa; }
         .btn-choice:active { transform: scale(0.95); }
+
+        .check-icon {
+            width: 20px; height: 20px; position: absolute; left: 15px; top: 50%;
+            transform: translateY(-50%);
+        }
 
         /* --- หน้าไม่หายงอน --- */
         #angry-page {
@@ -89,9 +95,9 @@
             display: none; flex-direction: column; align-items: center; justify-content: center;
             color: #333; padding: 20px; text-align: center;
         }
-        .cat-img-main { width: 180px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .cat-img-wai { width: 140px; margin-top: 10px; }
-        .kuromi-angry { width: 60px; position: absolute; bottom: 30px; right: 30px; opacity: 0.7; }
+        .cat-img-main { width: 180px; margin-bottom: 15px; pointer-events: none; }
+        .cat-img-wai { width: 140px; margin-top: 10px; pointer-events: none; }
+        .kuromi-angry { width: 60px; position: absolute; bottom: 30px; right: 30px; opacity: 0.7; pointer-events: none; }
 
         /* --- หน้าสำเร็จ --- */
         #success-page {
@@ -100,8 +106,8 @@
             display: none; flex-direction: column; align-items: center; justify-content: center;
             color: var(--primary-purple); text-align: center; padding: 20px;
         }
-        .hug-img { width: 220px; border-radius: 25px; margin: 20px 0; box-shadow: 0 10px 30px rgba(142, 68, 173, 0.2); }
-        .kuromi-love { width: 80px; margin-top: 15px; animation: bounce 1s infinite; }
+        .hug-img { width: 220px; margin: 20px 0; pointer-events: none; }
+        .kuromi-love { width: 80px; margin-top: 15px; animation: bounce 1s infinite; pointer-events: none; }
         @keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-10px);} }
     </style>
 </head>
@@ -127,8 +133,14 @@
         <div class="ask-text">ให้อภัยเค้าได้ไหม..<br>ดีกันน๊าาา</div>
         <img src="photo5.png" class="deco-img" alt="รูปตกแต่ง">
         <div class="btn-group">
-            <button class="btn-choice btn-yes" onclick="goSuccess()">หายงอน</button>
-            <button class="btn-choice btn-no" onclick="goAngry()">ไม่หายงอน</button>
+            <button class="btn-choice btn-yes" onclick="goSuccess()">
+                <img src="photo1.png" class="check-icon" alt="check-yes">
+                หายงอน
+            </button>
+            <button class="btn-choice btn-no" onclick="goAngry()">
+                <img src="photo6.png" class="check-icon" alt="check-no">
+                ไม่หายงอน
+            </button>
         </div>
     </div>
 
