@@ -9,7 +9,7 @@
         :root {
             --primary-purple: #8e44ad;
             --paper-bg: #ffffff;
-            --header-blue: #7d8cc4; /* สีแถบบัตรง้อตามรูป */
+            --header-blue: #7d8cc4;
         }
 
         body {
@@ -27,8 +27,9 @@
         #start-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 999;
-            display: flex; justify-content: center; align-items: center;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
             cursor: pointer;
+            transition: opacity 0.5s;
         }
         .start-btn {
             padding: 15px 40px; border-radius: 50px;
@@ -38,20 +39,32 @@
         }
         @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
 
-        /* --- ตัวบัตรง้อ (ดีไซน์ตามรูป) --- */
+        /* --- ข้อความพลุ --- */
+        #firework-text {
+            position: absolute; top: 35%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10; opacity: 0; transition: opacity 1s;
+            text-align: center; width: 100%;
+        }
+        .glowing-text {
+            font-size: 2.2rem; font-weight: 700;
+            color: #e0aaff; text-shadow: 0 0 20px #8e44ad;
+        }
+
+        /* --- ตัวบัตรง้อ --- */
         .card-container {
             position: relative; z-index: 100;
-            width: 90%; max-width: 400px;
-            perspective: 1000px; display: none;
+            width: 85%; max-width: 380px;
+            display: none;
         }
 
         .paper-card {
             background: var(--paper-bg);
             border-radius: 15px;
             padding: 40px 20px;
-            box-shadow: 10px 10px 0px rgba(255,255,255,0.1), 0 20px 40px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             color: #333;
-            transform: rotate(-2deg); /* เอียงเล็กน้อยตามรูป */
+            text-align: center; /* จัดทุกอย่างให้อยู่ตรงกลาง */
             position: relative;
         }
 
@@ -59,35 +72,35 @@
             background: var(--header-blue);
             color: white;
             display: inline-block;
-            padding: 5px 25px;
-            border-radius: 10px;
+            padding: 8px 35px;
+            border-radius: 12px;
             font-size: 1.8rem;
             font-weight: 700;
             margin-bottom: 25px;
-            box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
         }
 
         .content-text {
             font-size: 1.4rem;
-            font-weight: 500;
+            font-weight: 600;
             line-height: 1.6;
             margin-bottom: 30px;
+            min-height: 80px; /* จองพื้นที่ไว้เปลี่ยนข้อความ */
         }
 
         /* --- ส่วนของปุ่มติ๊กถูก --- */
         .options-group {
             display: flex;
-            justify-content: space-around;
-            align-items: center;
+            justify-content: center;
+            gap: 25px;
             margin-top: 20px;
         }
 
         .option-item {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             cursor: pointer;
-            font-size: 1.3rem;
             background: none; border: none; font-family: 'Mali', cursive;
         }
 
@@ -95,36 +108,24 @@
             width: 35px; height: 35px;
             border-radius: 8px;
             border: 2px solid #ddd;
-            display: flex; justify-content: center; align-items: center;
             transition: all 0.2s;
         }
+        .box-orange { background: #d08a5d; border: none; }
+        .box-green { background: #b5c9b4; border: none; }
+
+        .label-text { font-size: 1.1rem; color: #555; font-weight: 600; }
+
+        /* --- สติกเกอร์ตกแต่ง (ขยายใหญ่ขึ้น) --- */
+        .deco-sticker {
+            position: absolute;
+            pointer-events: none;
+            z-index: 105;
+        }
+        #sticker-top { width: 100px; top: -50px; right: -10px; } /* photo4 */
+        #sticker-bottom { width: 90px; bottom: -40px; left: -10px; } /* photo5 */
         
-        .box-orange { background: #d08a5d; border-color: #d08a5d; } /* สีส้มตามรูป */
-        .box-green { background: #b5c9b4; border-color: #b5c9b4; } /* สีเขียวตามรูป */
-
-        .sticker-img {
-            width: 40px; height: 40px;
-            object-fit: contain;
-        }
-
-        /* --- หน้าไม่หายงอน --- */
-        #angry-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(243, 229, 245, 0.95); z-index: 200;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center;
-        }
-
-        /* --- หน้าสำเร็จ --- */
-        #success-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; z-index: 300;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center;
-        }
-
-        .full-img { width: 200px; margin-bottom: 20px; }
-        .kuromi-float { width: 80px; position: absolute; bottom: 20px; right: 20px; }
+        /* สติกเกอร์ที่จะโผล่มาตอนกดปุ่ม */
+        #dynamic-sticker { width: 120px; margin-top: 15px; display: none; }
 
     </style>
 </head>
@@ -132,66 +133,53 @@
 
     <audio id="bg-music" loop><source src="song.mp3" type="audio/mpeg"></audio>
 
-    <div id="start-screen" onclick="init()">
-        <div class="start-btn">เปิดบัตรง้อ ✉️</div>
+    <div id="start-screen" onclick="startSequence()">
+        <div class="start-btn">อ้วม แตะหน้าจอดูสิ... 👈</div>
     </div>
 
     <canvas id="canvas"></canvas>
 
+    <div id="firework-text">
+        <h1 class="glowing-text">เค้ามีธุระสำคัญจะบอก... 💜</h1>
+    </div>
+
     <div class="card-container" id="card">
+        <img src="photo4.png" id="sticker-top" class="deco-sticker" alt="">
+        <img src="photo5.png" id="sticker-bottom" class="deco-sticker" alt="">
+
         <div class="paper-card">
-            <div class="card-header">บัตรง้อ</div>
+            <div id="card-header-el" class="card-header">บัตรง้อ</div>
             
-            <div class="content-text">
+            <div id="main-text" class="content-text">
                 รู้ว่าทำตัวไม่ดี<br>
-                ให้อภัยกันได้มั้ย
+                ให้อภัยกันได้ไหม
             </div>
 
-            <img src="photo4.png" style="width: 60px; position: absolute; top: -30px; right: 10px;" alt="">
-
-            <div class="options-group">
-                <button class="option-item" onclick="showSuccess()">
-                    <div class="check-box box-orange">
-                        <img src="photo1.png" class="sticker-img" alt="">
-                    </div>
-                    <span>ได้</span>
+            <div id="options" class="options-group">
+                <button class="option-item" onclick="handleAction('success')">
+                    <div class="check-box box-orange"></div>
+                    <span class="label-text">หายงอน</span>
                 </button>
 
-                <button class="option-item" onclick="showAngry()">
-                    <div class="check-box box-green">
-                        <img src="photo6.png" class="sticker-img" alt="">
-                    </div>
-                    <span>ได้</span>
+                <button class="option-item" onclick="handleAction('angry')">
+                    <div class="check-box box-green"></div>
+                    <span class="label-text">ไม่หายงอน</span>
                 </button>
             </div>
-            
-            <img src="photo5.png" style="width: 50px; margin-top: 20px;" alt="">
+
+            <center><img src="" id="dynamic-sticker" alt=""></center>
         </div>
-    </div>
-
-    <div id="angry-overlay">
-        <img src="photo1.png" class="full-img" alt="">
-        <h2 style="color:#333">ดีกันเถอะน๊าาา 🥺</h2>
-        <p style="color:#666">เค้าขอโทษจริงๆ นะคะ...</p>
-        <img src="photo2.png" style="width:120px;" alt="">
-        <img src="photo6.png" class="kuromi-float">
-    </div>
-
-    <div id="success-overlay">
-        <h1 style="color:var(--primary-purple); font-size: 2.5rem;">เย้! ขอบคุณค้าบ 💜</h1>
-        <img src="photo3.png" class="full-img" alt="">
-        <p style="color:#333; font-size: 1.2rem;">รักอ้วมที่สุดเลยยย 🥰</p>
-        <img src="photo7.png" class="kuromi-float" style="animation: bounce 1s infinite;">
     </div>
 
     <script>
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
-        let cw, ch;
+        const audio = document.getElementById('bg-music');
+        let cw, ch, particles = [];
+
         function resize() { cw = window.innerWidth; ch = window.innerHeight; canvas.width = cw; canvas.height = ch; }
         window.addEventListener('resize', resize); resize();
 
-        let particles = [];
         class Particle {
             constructor(x, y, hue) {
                 this.x = x; this.y = y;
@@ -226,24 +214,60 @@
             particles.forEach((p, i) => {
                 p.update(); p.draw(); if(p.alpha <= 0) particles.splice(i, 1);
             });
-            if(Math.random() < 0.03) createFirework();
+            if(Math.random() < 0.04) createFirework();
         }
 
-        function init() {
-            document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('bg-music').play().catch(()=>{});
-            document.getElementById('card').style.display = 'block';
-            loop();
+        // ลำดับการเล่นหน้าจอ
+        function startSequence() {
+            document.getElementById('start-screen').style.opacity = '0';
+            setTimeout(() => { 
+                document.getElementById('start-screen').style.display = 'none';
+                audio.play().catch(()=>{});
+                loop(); // เริ่มพลุ
+                
+                // โชว์ข้อความธุระ
+                const fwText = document.getElementById('firework-text');
+                fwText.style.opacity = '1';
+                
+                // หลังจาก 3 วิ ให้โชว์บัตรง้อ
+                setTimeout(() => {
+                    fwText.style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('card').style.display = 'block';
+                    }, 500);
+                }, 3000);
+            }, 500);
         }
 
-        function showAngry() {
-            const el = document.getElementById('angry-overlay');
-            el.style.display = 'flex';
-            setTimeout(() => { el.style.display = 'none'; }, 4000);
-        }
+        function handleAction(type) {
+            const mainText = document.getElementById('main-text');
+            const options = document.getElementById('options');
+            const dynSticker = document.getElementById('dynamic-sticker');
+            const header = document.getElementById('card-header-el');
 
-        function showSuccess() {
-            document.getElementById('success-overlay').style.display = 'flex';
+            if (type === 'angry') {
+                // กรณีไม่หายงอน
+                mainText.innerHTML = "ดีกันเถอะนะ...<br>เค้าขอโทษจริงๆ นะคะ 🥺";
+                dynSticker.src = "photo1.png"; // ใส่แค่ photo1
+                dynSticker.style.display = "block";
+                
+                // ซ่อนปุ่มเลือกชั่วคราว หรือค้างไว้ก็ได้ แต่ผมทำให้มันเปลี่ยนข้อความแล้วค้างไว้
+                options.style.visibility = "hidden";
+                setTimeout(() => { 
+                    options.style.visibility = "visible"; 
+                    mainText.innerHTML = "รู้ว่าทำตัวไม่ดี<br>ให้อภัยกันได้ไหม";
+                    dynSticker.style.display = "none";
+                }, 4000); // 4 วินาทีแล้วกลับมาให้เลือกใหม่
+
+            } else if (type === 'success') {
+                // กรณีหายงอน
+                header.innerHTML = "เย้! 💜";
+                header.style.background = "#9b59b6";
+                mainText.innerHTML = "ขอบคุณครับบ...<br>รักอ้วมที่สุดในโลกเลย 🥰";
+                dynSticker.src = "photo3.png"; // ใส่แค่ photo3
+                dynSticker.style.display = "block";
+                options.style.display = "none"; // หายงอนแล้วซ่อนปุ่มไปเลย
+            }
         }
     </script>
 </body>
