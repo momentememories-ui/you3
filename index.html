@@ -38,6 +38,7 @@
             font-size: 1.3rem; border: none; font-family: 'Mali', cursive;
             animation: pulse 2s infinite;
         }
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
 
         #firework-text {
             position: absolute; top: 40%; left: 50%;
@@ -47,12 +48,12 @@
         }
         .glowing-text {
             font-size: 2.5rem; font-weight: 700;
-            color: #e0aaff; text-shadow: 0 0 20px #8e44ad;
+            color: #e0aaff; text-shadow: 0 0 20px #8e44ad, 0 0 40px #a29bfe;
         }
 
         .card-container {
             position: relative; z-index: 100;
-            width: 85%; max-width: 360px;
+            width: 85%; max-width: 380px;
             display: none;
             animation: cardPop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -64,22 +65,20 @@
 
         .paper-card {
             background: var(--paper-bg);
-            border-radius: 25px;
-            padding: 40px 20px; 
+            border-radius: 20px;
+            padding: 40px 25px;
             box-shadow: 0 30px 70px rgba(0,0,0,0.7);
             color: #333;
             text-align: center;
             position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            transition: all 0.3s ease-in-out; /* เพิ่ม transition ให้บัตรหด/ขยายสมูท */
         }
 
         .card-header {
             background: var(--header-purple);
             color: white;
             display: inline-block;
-            padding: 8px 45px;
+            padding: 10px 45px;
             border-radius: 15px;
             font-size: 1.8rem;
             font-weight: 700;
@@ -90,38 +89,33 @@
             font-size: 1.5rem;
             font-weight: 600;
             line-height: 1.4;
-            margin-bottom: 5px; /* ลดระยะห่างลง */
-            width: 100%;
-        }
-
-        #dynamic-sticker { 
-            width: 160px;
-            height: auto;
-            margin-top: -10px; /* ขยับขึ้นไปชิดข้อความมากขึ้นเพื่อลดพื้นที่ว่าง */
             margin-bottom: 15px;
-            display: none; 
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .options-group {
             display: flex;
             justify-content: center;
-            gap: 40px;
-            width: 100%;
+            gap: 35px;
+            margin-top: 15px;
         }
 
         .option-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             cursor: pointer;
             background: none; border: none; font-family: 'Mali', cursive;
         }
 
-        .check-box { width: 45px; height: 45px; border-radius: 12px; }
+        .check-box {
+            width: 45px; height: 45px;
+            border-radius: 12px;
+            transition: transform 0.2s ease;
+        }
         .box-pink { background: var(--btn-pink); }
         .box-black { background: var(--btn-black); }
+
         .label-text { font-size: 1.2rem; color: #555; font-weight: 600; }
 
         .deco-sticker {
@@ -129,9 +123,17 @@
             pointer-events: none;
             z-index: 105;
         }
-        #sticker-top { width: 110px; top: -60px; right: -20px; }
-        #sticker-bottom { width: 100px; bottom: -50px; left: -25px; }
+        #sticker-top { width: 130px; top: -75px; right: -25px; }
+        #sticker-bottom { width: 120px; bottom: -65px; left: -25px; }
         
+        #dynamic-sticker { 
+            width: 170px; 
+            margin-top: 5px;
+            margin-bottom: 10px;
+            display: none; 
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
         @keyframes popIn {
             0% { transform: scale(0.4); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
@@ -164,7 +166,7 @@
                 ให้อภัยกันได้ไหม
             </div>
 
-            <img src="" id="dynamic-sticker" alt="">
+            <center><img src="" id="dynamic-sticker" alt=""></center>
 
             <div id="options" class="options-group">
                 <button class="option-item" onclick="handleAction('success')">
@@ -242,9 +244,9 @@
                         setTimeout(() => {
                             document.getElementById('card').style.display = 'block';
                         }, 600);
-                    }, 2500);
-                }, 800);
-            }, 500);
+                    }, 3500);
+                }, 1000);
+            }, 800);
         }
 
         function handleAction(type) {
@@ -257,13 +259,15 @@
                 mainText.innerHTML = "ดีกันเถอะนะ...<br>เค้าขอโทษจริงๆ นะคะ 🥺";
                 dynSticker.src = "photo1.png";
                 dynSticker.style.display = "block";
-                options.style.visibility = "hidden";
+                
+                // ปรับจาก visibility: hidden เป็น display: none เพื่อให้พื้นที่สีขาวหายไป บัตรจะสั้นลงทันที
+                options.style.display = "none";
                 
                 setTimeout(() => { 
-                    options.style.visibility = "visible"; 
+                    options.style.display = "flex"; 
                     mainText.innerHTML = "รู้ว่าทำตัวไม่ดี<br>ให้อภัยกันได้ไหม";
                     dynSticker.style.display = "none";
-                }, 3500);
+                }, 4000);
             } else if (type === 'success') {
                 header.innerHTML = "เย้! 💜";
                 header.style.background = "#fd79a8";
